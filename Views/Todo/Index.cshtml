@@ -1,0 +1,121 @@
+﻿@model List<SimpleToDoList.Models.Item>
+@{
+    ViewData["Title"] = "Home Page";
+}
+@section style {
+    <style>
+
+        body {
+            font-family: sans-serif;
+            background-color: #f4f7f6; /* Light gray background */
+            color: #333; /* Dark gray text */
+        }
+
+        /* Styling for completed tasks */
+        .list-group-item input[type="checkbox"]:checked + span {
+            color: #6c757d; /* Muted color for completed text */
+        }
+
+        /* Consistent button styling (if not fully relying on Bootstrap) */
+        .btn {
+            cursor: pointer;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            white-space: nowrap;
+            line-height: 60px; /* Vertically center the text there */
+        }
+
+    </style>
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+
+        <h1 class="text-center mb-4">@ViewData["Title"]</h1>
+
+        <form asp-action="Create" asp-controller="Todo"  method="post" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="Title" class="form-control" placeholder="Enter new task..." required />
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Add Task ➕</button>
+                </div>
+            </div>
+        </form>
+
+        @if (Model.Any())
+        {
+            <ul class="list-group">
+                @foreach (var item in Model)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center @(item.IsCompleted ? "list-group-item-success" : "")">
+                        <div>
+                            <input type="checkbox"
+       class="mr-2 toggle-complete"
+       data-id="@item.Id"
+       @(item.IsCompleted ? "checked" : "") />
+                            <span>
+                                @item.Title
+                            </span>
+                        </div>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@item.Id" asp-controller="todo" class="btn btn-sm btn-outline-secondary mr-1">✏️</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" asp-controller="todo" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this task?')">🗑️</button>
+                            </form>
+                        </div>
+                    </li>
+                }
+            </ul>
+
+            <div class="mb-2">
+            <span id="total-count" class="badge bg-primary">Total: @Model.Count</span>
+            <span id="completed-count" class="badge bg-success">Completed: @Model.Count(i => i.IsCompleted)</span>
+            <span id="pending-count" class="badge bg-warning text-dark">Pending: @Model.Count(i => !i.IsCompleted)</span>
+        </div>
+
+        }
+        else
+        {
+            <p class="text-center text-muted">No tasks yet! Add one above. 🎉</p>
+        }
+
+    </div>
+</div>
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+            $('.toggle-complete').on('change', function () {
+                var checkbox = $(this);
+                var id = checkbox.data('id');
+                var listItem = checkbox.closest('li.list-group-item'); // Get the parent <li> element
+                $.ajax({
+                    url: '@Url.Action("ToggleComplete", "Todo")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (response.success) {
+                            var span = checkbox.next('span');
+                            if (response.isCompleted) {
+                                span.addClass('text-decoration-line-through');
+                                listItem.addClass('list-group-item-success'); // Add background class to LI
+                            } else {
+                                span.removeClass('text-decoration-line-through');
+                                listItem.removeClass('list-group-item-success'); // Remove background class from LI
+                            }
+                            // Update counts
+                            $('#total-count').text('Total: ' + response.total);
+                            $('#completed-count').text('Completed: ' + response.completed);
+                            $('#pending-count').text('Pending: ' + response.pending);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

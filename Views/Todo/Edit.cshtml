@@ -1,0 +1,27 @@
+﻿@model SimpleToDoList.Models.Item  
+@{  
+    ViewData["Title"] = "Edit";  
+}  
+
+<div class="row">  
+    <div class="col-md-8 offset-md-2">  
+
+        <h1>Edit</h1>  
+
+        <form asp-action="Edit" asp-controller="Todo" method="post">  
+            <input type="hidden" name="Id" value="@Model.Id" />  
+            <div class="form-group">  
+                <label for="Title">Title</label>  
+                <input type="text" class="form-control" id="Title" name="Title" value="@Model.Title" required />  
+                <label for="IsCompleted" asp-for="IsCompleted">IsCompleted</label>  
+                <select class="form-control" id="IsCompleted" name="IsCompleted">  
+                    <option value="true" selected="@(Model.IsCompleted)">True</option>  
+                    <option value="false" selected="@(Model.IsCompleted == false)">False</option>  
+                </select>  
+            </div>  
+            <button type="submit" class="btn btn-primary">Save Changes</button>  
+            <a asp-action="Index" asp-controller="Todo" class="btn btn-secondary">Cancel</a>  
+        </form>  
+
+    </div>  
+</div>
