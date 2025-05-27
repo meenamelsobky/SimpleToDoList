@@ -52,7 +52,9 @@ A modern, responsive To-Do List web application built with ASP.NET Core Razor Pa
 
 ## Screenshots
 
-_Add screenshots here if desired._
+![image](https://github.com/user-attachments/assets/e4d55544-b03d-44f8-aba5-126958a717bd)
+![image](https://github.com/user-attachments/assets/43b3d65f-bc08-4304-bc69-054d1a5928cc)
+
 
 ## Contributing
 
